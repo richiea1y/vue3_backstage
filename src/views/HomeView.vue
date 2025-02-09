@@ -1,9 +1,9 @@
 <script setup>
-import TheWelcome from '../components/TheWelcome.vue'
+import { ref } from 'vue';
 </script>
 
 <template>
-  <main>
-    <TheWelcome />
-  </main>
+  <div class="bg-slate-600">
+    <img src="@/assets/img/usagi.gif" class="p-6" />
+  </div>
 </template>

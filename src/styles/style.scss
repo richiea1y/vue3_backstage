@@ -1,10 +1,8 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 body,
 html {
   background-color: #212121;
+  margin: 0;
+  padding: 0;
 }
 
 #app {

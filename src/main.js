@@ -1,6 +1,8 @@
+import '@/styles/tw.css'
 import '@/styles/style.scss'
 import 'element-plus/dist/index.css'
 import 'virtual:svg-icons-register'
+
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 // import SvgIcon from '@/components/SvgIcon.vue';

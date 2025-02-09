@@ -7,6 +7,7 @@ import IconsResolver from 'unplugin-icons/resolver'
 import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
+import tailwindcss from '@tailwindcss/vite'
 // import type { OutputBundle } from 'rollup';
 
 // https://vitejs.dev/config/
@@ -16,6 +17,7 @@ export default defineConfig(({ mode }) => {
     base: process.env.NODE_ENV === 'production' ? '/vue3_backstage/' : './',
     plugins: [
       vue(),
+      tailwindcss(),
       Components({
         resolvers: [
           ElementPlusResolver(),
