@@ -8,16 +8,6 @@ const router = createRouter({
       redirect: '/main',
     },
     {
-      path: '/main',
-      name: 'main',
-      component: () => import('../views/HomeView.vue'),
-      meta: {
-        title: 'Main',
-        header: 'Main',
-        requiresAuth: true
-      }
-    },
-    {
       path: '/login',
       name: 'Login',
       component: () => import('@/views/Login.vue'),
@@ -26,6 +16,19 @@ const router = createRouter({
         header: 'Login',
         requiresAuth: false
       }
+    },
+    {
+      path: '/main',
+      name: 'main',
+      component: () => import('../views/HomeView.vue'),
+      meta: {
+        title: 'Main',
+        header: 'Main',
+        requiresAuth: true
+      },
+      children: [
+        // 其他後台管理系統相關頁面都會放在這
+      ]
     },
   ],
 })
