@@ -8,9 +8,7 @@ import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
 import Components from 'unplugin-vue-components/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import tailwindcss from '@tailwindcss/vite'
-// import type { OutputBundle } from 'rollup';
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   return {
@@ -44,6 +42,7 @@ export default defineConfig(({ mode }) => {
         '@/types': fileURLToPath(new URL('./src/types', import.meta.url)),
         '@/styles': fileURLToPath(new URL('./src/styles', import.meta.url)),
         '@/assets': fileURLToPath(new URL('./src/assets', import.meta.url)),
+        '@/service': fileURLToPath(new URL('./src/service', import.meta.url)),
         '@/composables': fileURLToPath(new URL('./src/composables', import.meta.url)),
         '@/components': fileURLToPath(new URL('./src/components', import.meta.url)),
         '@/utils': fileURLToPath(new URL('./src/utils', import.meta.url)),
