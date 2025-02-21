@@ -1,0 +1,48 @@
+@use "../global-forward.scss" as global;
+
+.top-navigator {
+  position: sticky;
+  z-index: 2;
+  @include global.flexBox(row, center, space-between);
+  width: 100%;
+  height: 48px;
+  border-bottom: 1px solid global.$dark-05;
+  background-color: global.$light-100;
+  color: global.$dark-80;
+  padding: 0 1rem;
+}
+
+.top-toolbar {
+  @include global.flexBox(row, center, null);
+  height: 48px;
+  padding: 0 1rem;
+}
+
+.top-logo {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  cursor: pointer;
+  width: 44px;
+  height: 44px;
+  background: url("@/assets/img/logo.svg") no-repeat center;
+  background-size: contain;
+}
+
+.navigator-block {
+  @include global.flexBox(column, null, null);
+  border-right: 1px solid global.$dark-05;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.navigator {
+  position: relative;
+  width: 240px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.navigator-preffix {
+  @include global.flexBox(row, center, center);
+  height: 100%;
+}
