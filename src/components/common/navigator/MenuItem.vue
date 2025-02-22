@@ -6,7 +6,7 @@
       </el-icon>
       <span class="w-full">{{ item.title }}</span>
     </template>
-    <menu-item v-for="child in item.children" :key="child.index" :item="child" class="terminate-child-menu" />
+    <MenuItem v-for="child in item.children" :key="child.index" :item="child" class="terminate-child-menu" />
   </el-sub-menu>
   <el-menu-item v-else :index="item.index" :disabled="item.disabled" @click="handleClick">
     <el-icon>
