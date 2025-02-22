@@ -27,6 +27,29 @@ const router = createRouter({
         requiresAuth: true
       },
       children: [
+        {
+          path: '/goods',
+          name: 'Goods',
+          component: () => import('@/views/goods/index.vue'),
+          redirect: { name: 'GoodsList' },
+          meta: {
+            requiresAuth: true,
+            title: 'Goods',
+            header: 'Goods'
+          },
+          children: [
+            {
+              path: 'goods-list',
+              name: 'GoodsList',
+              component: () => import('@/views/goods/GoodsList.vue'),
+              meta: {
+                requiresAuth: true,
+                title: 'Goods List',
+                header: 'Goods List'
+              }
+            }
+          ]
+        },
         // 其他後台管理系統相關頁面都會放在這
       ]
     },
