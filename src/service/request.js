@@ -1,9 +1,9 @@
 import axios from 'axios'
 
 export function request(config) {
-  config.headers.token = !localStorage.getItem('userInfo')
+  config.headers.token = !localStorage.getItem('token')
     ? ''
-    : JSON.parse(localStorage.getItem('userInfo')).token
+    : localStorage.getItem('token')
   const service = axios.create({
     headers: config.headers,
     baseURL: import.meta.env.MODE === 'production' ? import.meta.env.VITE_BASE_API : '/api',

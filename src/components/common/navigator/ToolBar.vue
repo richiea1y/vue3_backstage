@@ -12,7 +12,7 @@
       </h1>
       <el-breadcrumb separator-icon="ArrowRight">
         <el-breadcrumb-item :to="{ path: '/main' }">Home</el-breadcrumb-item>
-        <template v-for="item in breadcrumbItems" :key="index">
+        <template v-for="item in breadcrumbItems" :key="item.path">
           <el-breadcrumb-item :to="item.path">
             {{ item.title }}
           </el-breadcrumb-item>
