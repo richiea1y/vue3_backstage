@@ -14,7 +14,7 @@ export function useGoodsList() {
     GoodsType: ''
   })
 
-  /** 注意，有預設值的關線，不要直接把這個MODEL當成UI綁定對象 */
+  /** 注意，有預設值的關係，不要直接把這個MODEL當成UI綁定對象 */
 
   const searchForm = ref({
     ID: 0,
@@ -25,7 +25,7 @@ export function useGoodsList() {
   const lastSearchForm = ref({ ...searchForm.value })
 
   const pagination = ref({
-    currentPage: 0,
+    currentPage: 1,
     pageSize: 20,
     total: 0
   })
@@ -91,6 +91,7 @@ export function useGoodsList() {
   return {
     searchFilter,
     tableData,
+    pagination,
     tableLoading,
     goodsForm,
     goodsTypeList,
