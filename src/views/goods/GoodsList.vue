@@ -13,7 +13,17 @@
     </div>
     <el-button type="primary" plain icon="Plus" @click="dialog.createGoods = true">New Goods</el-button>
   </div>
-  <div class="flex items-end justify-between p-3 my-3 bg-white rounded bd-1">
+  <div class="flex flex-col p-3 my-3 bg-white rounded bd-1">
+    <el-pagination
+      v-model:currentPage="pagination.currentPage"
+      v-model:page-size="pagination.pageSize"
+      :page-sizes="[20, 50, 100]"
+      :background="true"
+      layout="sizes, prev, pager, next"
+      :total="pagination.total"
+      @size-change="onPageSizeChange"
+      @current-change="onPageChange"
+    />
     <el-table :data="tableData" flexible stripe style="width: 100%" v-loading="tableLoading">
       <el-table-column prop="ID" label="ID" width="100"> </el-table-column>
       <el-table-column prop="Name" label="商品名稱"> </el-table-column>
@@ -34,13 +44,32 @@ import { useGoodsList } from './composables';
 import CreateGoods from './components/dialog/CreateGoods.vue';
 import { updateGoods } from '@/service/api';
 
-const { searchFilter, tableData, tableLoading, goodsForm, goodsTypeList, getGoodsListRequest, getGoodsTypeList } =
-  useGoodsList();
+const {
+  searchFilter,
+  tableData,
+  pagination,
+  tableLoading,
+  goodsForm,
+  goodsTypeList,
+  getGoodsListRequest,
+  getGoodsTypeList
+} = useGoodsList();
 
 const dialog = ref({
   createGoods: false,
   updateGoods: false
 });
+
+const onPageChange = val => {
+  state.searchParams.currentPage = val;
+  getGoodsListRequest(searchFilter.value, true);
+};
+
+const onPageSizeChange = val => {
+  state.searchParams.pageSize = val;
+  state.searchParams.currentPage = 1;
+  getGoodsListRequest(searchFilter.value, true);
+};
 
 onMounted(async () => {
   await nextTick();
