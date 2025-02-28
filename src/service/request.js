@@ -9,7 +9,10 @@ export function request(config) {
     baseURL: import.meta.env.MODE === 'production' ? import.meta.env.VITE_BASE_API : '/api',
     timeout: 30000,
     transformRequest: [
-      (data = config.params) => {
+      (data = config.params || config.data) => {
+        if (config.headers['Content-Type'] === 'multipart/form-data') {
+          return data
+        }
         const tempData = getJwtData(JSON.stringify(data))
         return tempData.data
       }

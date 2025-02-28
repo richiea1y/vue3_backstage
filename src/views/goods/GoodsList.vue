@@ -29,7 +29,7 @@
       <el-table-column prop="Name" label="商品名稱"> </el-table-column>
       <el-table-column label="商品圖片">
         <template #default="{ row }">
-          <img :src="row.ImageUrls[0].Url" alt="商品圖片" class="w-[120px] aspect-auto-[1]" />
+          <img :src="row.ImageUrls[0].Url" alt="商品圖片" class="w-[90px] aspect-auto-[1]" />
         </template>
       </el-table-column>
       <el-table-column prop="UnitPrice" label="價格"> </el-table-column>
