@@ -19,7 +19,9 @@ export function useGoodsList() {
   const searchForm = ref({
     ID: 0,
     GoodsName: '',
-    GoodsType: 0
+    GoodsType: 0,
+    Page: 0,
+    PageLimit: 0,
   })
 
   const lastSearchForm = ref({ ...searchForm.value })

@@ -23,12 +23,11 @@
           <el-button type="primary" class="deep_dark" icon="UploadFilled" @click="handleUpload">上傳圖片</el-button>
         </div>
         <div class="goods-img-preview">
-          <div v-for="(item, i) in getcurrentImgs[formModel.ImagesIdnet]" :key="i" class="img-preview__items">
+          <div v-for="(item, i) in getGoodsImgs" :key="i" class="img-preview__items">
             <div class="img-container">
               <img :src="item.Url" />
-              {{ item.Url }}
             </div>
-            <div class="flex flex-col items-center">
+            <div class="flex items-center">
               <p class="mx-4">ID: {{ item.ID }}</p>
               <p>Ident: {{ item.Ident }}</p>
             </div>
@@ -51,6 +50,8 @@
 <script setup>
 import { ref, computed } from 'vue';
 import { ElMessage } from 'element-plus';
+import to from 'await-to-js';
+import { uploadImg } from '@/service/api';
 
 /* ----------------------
   Props
@@ -127,9 +128,8 @@ const handleConfirm = async () => {
 
 /** Image Upload */
 
-const getcurrentImgs = computed(() => {
-  const obj = { ...filesModel.value.goodsImg };
-  return obj;
+const getGoodsImgs = computed(() => {
+  return filesModel.value.goodsImg[formModel.value.ImagesIdnet];
 });
 
 const selectFile = async event => {
@@ -152,47 +152,35 @@ const selectFile = async event => {
   }
 };
 
-const handleUpload = () => {
-  const token = localStorage.getItem('token');
+const handleUpload = async () => {
   const formData = new FormData();
   formData.append('Ident', formModel.value.ImagesIdnet);
   formData.append('Img', filesModel.value.imgFile);
 
-  const options = {
-    method: 'POST',
-    headers: {
-      token: token
-    },
-    body: formData
-  };
-
-  if (filesModel.value.imgFile === null) {
+  const [err, res] = await to(uploadImg(formData));
+  console.log('###uploadImg: ', res, err);
+  if (err) {
     ElMessage({
       type: 'error',
-      message: '未選擇檔案'
+      message: err.response.data.Msg
     });
     return;
   }
-  if (!filesModel.value.goodsImg.hasOwnProperty(formModel.ImagesIdnet)) {
-    filesModel.value.goodsImg[formModel.ImagesIdnet] = [];
+
+  ElMessage({
+    type: 'success',
+    message: '已成功上傳圖片'
+  });
+
+  if (!filesModel.value.goodsImg.hasOwnProperty(formModel.value.ImagesIdnet)) {
+    filesModel.value.goodsImg[formModel.value.ImagesIdnet] = [];
   }
-  const baseUrl = import.meta.env.MODE === 'production' ? import.meta.env.VITE_BASE_API : '/api';
-  fetch(baseUrl + '/admin/image/c', options)
-    .then(res => res.json())
-    .then(res => {
-      filesModel.value.goodsImg[formModel.ImagesIdnet].push(res.Data);
-      console.log(res, filesModel.value.goodsImg);
-      ElMessage({
-        type: 'success',
-        message: '已成功上傳圖片'
-      });
-    })
-    .catch(() => {
-      ElMessage({
-        type: 'error',
-        message: 'API錯誤'
-      });
-    });
+
+  filesModel.value.goodsImg[formModel.value.ImagesIdnet].push({
+    ID: res.data.Data.ID,
+    Url: res.data.Data.Url,
+    Ident: formModel.value.ImagesIdnet
+  });
 };
 
 /** */
@@ -295,6 +283,7 @@ const submitForm = async formEl => {
       display: flex;
       align-items: center;
       justify-content: center;
+      aspect-ratio: 4/3;
       width: 120px;
       height: 100%;
       background-color: #f0f0f0;

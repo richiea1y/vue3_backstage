@@ -27,6 +27,16 @@ export const getOverview = (data) =>
     data
   })
 
+/* upload img */
+export const uploadImg = (formData) => request({
+  url: '/admin/image/c',
+  method: 'post',
+  headers: {
+    'Content-Type': 'multipart/form-data'
+  },
+  data: formData
+})
+
 /* get img */
 export const getImg = (data) =>
   request({
