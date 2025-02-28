@@ -27,7 +27,7 @@ export const getOverview = (data) =>
     data
   })
 
-/* upload img */
+/* upload img (原生形式寫作直到拉出管理的過程)*/
 export const uploadImg = (formData) => request({
   url: '/admin/image/c',
   method: 'post',

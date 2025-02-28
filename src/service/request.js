@@ -9,6 +9,7 @@ export function request(config) {
     baseURL: import.meta.env.MODE === 'production' ? import.meta.env.VITE_BASE_API : '/api',
     timeout: 30000,
     transformRequest: [
+      // 只要Content Type是formData形式傳送的話，不需要經過我們自行加密的編碼
       (data = config.params || config.data) => {
         if (config.headers['Content-Type'] === 'multipart/form-data') {
           return data
