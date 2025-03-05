@@ -2,14 +2,14 @@
   <div class="flex items-end justify-between p-3 my-3 bg-white rounded bd-1">
     <div class="flex items-center gap-2">
       <div class="w-[140px]">
-        <el-input v-model="searchFilter.ID" placeholder="Search By ID" clearable />
+        <el-input v-model="searchFilter.GoodsName" placeholder="Search By Name" clearable />
       </div>
       <div class="w-[180px]">
         <el-select v-model="searchFilter.GoodsType" placeholder="Select Goods Type" clearable>
           <el-option v-for="item in goodsTypeList" :key="item.ID" :label="item.Name" :value="item.ID" />
         </el-select>
       </div>
-      <el-button type="primary" icon="Search" @click="getGoodsListRequest(searchFilter, false)">Search</el-button>
+      <el-button type="primary" icon="Search" @click="getGoodsListRequest(false)">Search</el-button>
     </div>
     <el-button type="primary" plain icon="Plus" @click="dialog.createGoods = true">New Goods</el-button>
   </div>
@@ -17,7 +17,7 @@
     <el-pagination
       v-model:currentPage="pagination.currentPage"
       v-model:page-size="pagination.pageSize"
-      :page-sizes="[20, 50, 100]"
+      :page-sizes="[10, 20, 50, 100]"
       :background="true"
       layout="sizes, prev, pager, next"
       :total="pagination.total"
@@ -61,20 +61,19 @@ const dialog = ref({
 });
 
 const onPageChange = val => {
-  state.searchParams.currentPage = val;
-  getGoodsListRequest(searchFilter.value, true);
+  pagination.value.currentPage = val;
+  getGoodsListRequest(true);
 };
 
 const onPageSizeChange = val => {
-  state.searchParams.pageSize = val;
-  state.searchParams.currentPage = 1;
-  getGoodsListRequest(searchFilter.value, true);
+  pagination.value.pageSize = val;
+  pagination.value.currentPage = 1;
+  getGoodsListRequest(true);
 };
 
 onMounted(async () => {
   await nextTick();
   getGoodsTypeList();
-  // 初始化不需要帶額外搜尋條件，給空物件即可
-  getGoodsListRequest({}, false);
+  getGoodsListRequest(false);
 });
 </script>

@@ -9,22 +9,12 @@ export function useGoodsList() {
 
   /** 搜尋 UI 應綁定的對象在這 */
   const searchFilter = ref({
-    ID: '',
-    GoodsName: '',
-    GoodsType: ''
-  })
-
-  /** 注意，有預設值的關係，不要直接把這個MODEL當成UI綁定對象 */
-
-  const searchForm = ref({
     ID: 0,
     GoodsName: '',
-    GoodsType: 0,
-    Page: 0,
-    PageLimit: 0,
+    GoodsType: null
   })
 
-  const lastSearchForm = ref({ ...searchForm.value })
+  const lastSearchFilter = ref({ ...searchFilter.value })
 
   const pagination = ref({
     currentPage: 1,
@@ -61,11 +51,9 @@ export function useGoodsList() {
 
   /** Goods list request */
 
-  const getGoodsListRequest = async (postData, useLastSearchForm = false) => {
+  const getGoodsListRequest = async (useLastSearchForm = false) => {
     tableLoading.value = true
-    postData ? searchForm.value = { ...postData } : searchForm.value
-
-    const currentFilter = useLastSearchForm ? lastSearchForm.value : searchForm.value
+    const currentFilter = useLastSearchForm ? lastSearchFilter.value : searchFilter.value
 
     /** 一定要有預設值，ID和TYPE沒給值的部分就轉為 0 */
     const requestData = {
@@ -86,7 +74,8 @@ export function useGoodsList() {
     }
 
     tableData.value = res.data.Data
-    lastSearchForm.value = { ...searchForm.value }
+    pagination.value.total = res.data.TotalCount
+    lastSearchFilter.value = { ...searchFilter.value }
     console.log('### GOODS LIST RES: ', tableData.value)
   }
 
