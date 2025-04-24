@@ -21,6 +21,8 @@ export function request(config) {
   })
   const getJwtData = (data) => {
     for (const key in data) {
+      // 因為沒有特定的值會是undefined導致找不到欄位，CONSOLE會抱錯
+      // 只要是物件，一定要檢查物件內有沒有確實帶了這個資料
       if (data.hasOwnProperty(key)) {
         const val = data[key]
         if (val === '' || val === undefined) {
@@ -28,7 +30,7 @@ export function request(config) {
         }
       }
     }
-    const jwt = encodeURIComponent(btoa(encodeURIComponent(data)))
+    const jwt = encodeURIComponent(Buffer.from(encodeURIComponent(data), 'utf-8').toString('base64'))
     return { data: jwt }
   }
 
