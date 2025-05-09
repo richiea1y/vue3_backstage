@@ -30,7 +30,9 @@ export function request(config) {
         }
       }
     }
-    const jwt = encodeURIComponent(Buffer.from(encodeURIComponent(data), 'utf-8').toString('base64'))
+    // ❌ Wrong (Buffer is Node.js only)
+    // const jwt = encodeURIComponent(Buffer.from(encodeURIComponent(data), 'utf-8').toString('base64'))
+    const jwt = encodeURIComponent(btoa(encodeURIComponent(data)))
     return { data: jwt }
   }
 
