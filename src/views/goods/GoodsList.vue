@@ -24,7 +24,19 @@
       @size-change="onPageSizeChange"
       @current-change="onPageChange"
     />
-    <el-table :data="tableData" flexible stripe style="width: 100%" v-loading="tableLoading">
+    <!-- tableData 回傳資料的型別（來自 getGoodsList()），應該是： prop="ID"， 所以 row-key 也應該是 ID（大寫），而不是 id（小寫）！-->
+    <el-table
+      ref="multipleTableRef"
+      row-key="ID"
+      :data="tableData"
+      flexible
+      stripe
+      style="width: 100%"
+      v-loading="tableLoading"
+      @selection-change="handleSelectionChange"
+      @row-click="clickToSelect"
+    >
+      <el-table-column type="selection" width="55" />
       <el-table-column prop="ID" label="ID" width="100"> </el-table-column>
       <el-table-column prop="Name" label="商品名稱"> </el-table-column>
       <el-table-column label="商品圖片">
@@ -60,6 +72,25 @@ const {
   getGoodsListRequest,
   getGoodsTypeList
 } = useGoodsList();
+
+const multipleTableRef = ref(); // Table reference
+const multipleSelection = ref([]); // Selected rows
+
+// The row-click event passes row, column, and event as parameters
+// 處理點擊行時，切換選取狀態
+const clickToSelect = row => {
+  multipleTableRef.value.clearSelection(); // ✅ Clears all
+  multipleTableRef.value.toggleRowSelection(row); // ✅ Selects just the clicked one
+};
+
+// 處理選取狀態變化，更新 multipleSelection
+const handleSelectionChange = val => {
+  multipleSelection.value = val;
+  console.log('Selected rows:', multipleSelection.value);
+};
+
+// 獲取目前選擇的資料（如果需要其他處理）
+const getSelectedTableData = () => multipleTableRef.value.getSelectionRows();
 
 const dialog = ref({
   createGoods: false,
