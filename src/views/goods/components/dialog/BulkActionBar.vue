@@ -11,7 +11,7 @@
         <img src="@/assets/icon/inbox.svg" class="white-icon text-slate-50 px-2 max-w-8" />
         <div class="pr-2">Categorize</div>
       </button>
-      <button class="act-bt flex items-center py-1.5 rounded-lg">
+      <button class="act-bt flex items-center py-1.5 rounded-lg" @click="emit('deleteSelection')">
         <img src="@/assets/icon/trash-2.svg" class="white-icon text-slate-50 px-2 max-w-8" />
         <div class="pr-2">Delete</div>
       </button>
@@ -28,7 +28,7 @@ const props = defineProps({
   selectedCount: Number
 });
 
-const emit = defineEmits(['clearSelection']);
+const emit = defineEmits(['clearSelection', 'deleteSelection']);
 </script>
 
 <style scoped>

@@ -1,6 +1,6 @@
 import { ref, onMounted, computed, nextTick } from 'vue'
 import to from 'await-to-js'
-import { getGoodsList, getGoodsType } from '@/service/api'
+import { getGoodsList, getGoodsType, removeGoods } from '@/service/api'
 
 export function useGoodsList() {
 
@@ -79,6 +79,22 @@ export function useGoodsList() {
     console.log('### GOODS LIST RES: ', tableData.value)
   }
 
+  const postDeleteGoods = async (id) => {
+    try {
+      const res = await removeGoods(id);
+      if (!res || res.data.Code !== 200) {
+        console.error('Failed to delete goods:', res?.data);
+        return false;
+      }
+
+      console.log('### GOODS DELETE RES: ', res.data);
+
+    } catch (err) {
+      console.error('Failed to delete goods:', err);
+      return false;
+    }
+  }
+
   return {
     searchFilter,
     tableData,
@@ -87,6 +103,7 @@ export function useGoodsList() {
     goodsForm,
     goodsTypeList,
     getGoodsListRequest,
-    getGoodsTypeList
+    getGoodsTypeList,
+    postDeleteGoods,
   }
 }

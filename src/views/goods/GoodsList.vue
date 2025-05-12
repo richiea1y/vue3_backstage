@@ -54,7 +54,7 @@
     </el-table>
   </div>
   <CreateGoods v-model="dialog.createGoods" v-model:formModel="goodsForm" />
-  <BulkActionBar :selectedCount @clearSelection="clearSelection" />
+  <BulkActionBar :selectedCount @clearSelection="clearSelection" @deleteSelection="deleteSelection" />
 </template>
 
 <script setup>
@@ -72,7 +72,8 @@ const {
   goodsForm,
   goodsTypeList,
   getGoodsListRequest,
-  getGoodsTypeList
+  getGoodsTypeList,
+  postDeleteGoods
 } = useGoodsList();
 
 const multipleTableRef = ref(); // Table reference
@@ -89,18 +90,30 @@ const clickToSelect = row => {
 const handleSelectionChange = val => {
   multipleSelection.value = val;
   console.log('Selected rows:', val);
-  // console.log('Selected Count:', multipleTableRef.value.length);
   console.log('Selected Count:', selectedCount.value);
 };
+
+const selectedCount = computed(() => multipleSelection.value.length);
 
 const clearSelection = () => {
   multipleTableRef.value.clearSelection();
 };
 
-const selectedCount = computed(() => multipleSelection.value.length);
-
-// 獲取目前選擇的資料（如果需要其他處理）
-// const getSelectedTableData = () => multipleTableRef.value.getSelectionRows();
+const deleteSelection = () => {
+  // Make sure at least one item is selected
+  if (selectedCount.value === 0) {
+    return;
+  }
+  // Response format of postDeleteGoods is JSON { "ID": null }
+  const response = { ID: null };
+  const idsToDelete = multipleSelection.value.map(item => item.ID);
+  idsToDelete.forEach(id => {
+    response.ID = id;
+    postDeleteGoods(response);
+  });
+  // const selectedGoodsIDs = multipleSelection.value.map(item => item.ID);
+  // console.log('Goods to delete:', selectedGoodsIDs);
+};
 
 const dialog = ref({
   createGoods: false,
