@@ -54,7 +54,7 @@
     </el-table>
   </div>
   <CreateGoods v-model="dialog.createGoods" v-model:formModel="goodsForm" />
-  <BulkActionBar :selectedCount />
+  <BulkActionBar :selectedCount @clearSelection="clearSelection" />
 </template>
 
 <script setup>
@@ -91,6 +91,10 @@ const handleSelectionChange = val => {
   console.log('Selected rows:', val);
   // console.log('Selected Count:', multipleTableRef.value.length);
   console.log('Selected Count:', selectedCount.value);
+};
+
+const clearSelection = () => {
+  multipleTableRef.value.clearSelection();
 };
 
 const selectedCount = computed(() => multipleSelection.value.length);
