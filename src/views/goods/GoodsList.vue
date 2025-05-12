@@ -54,12 +54,14 @@
     </el-table>
   </div>
   <CreateGoods v-model="dialog.createGoods" v-model:formModel="goodsForm" />
+  <BulkActionBar />
 </template>
 
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue';
-import { useGoodsList } from './composables';
-import CreateGoods from './components/dialog/CreateGoods.vue';
+import { useGoodsList } from '@/views/goods/composables';
+import CreateGoods from '@/views/goods/components/dialog/CreateGoods.vue';
+import BulkActionBar from '@/views/goods/components/dialog/BulkActionBar.vue';
 import { updateGoods } from '@/service/api';
 
 const {
