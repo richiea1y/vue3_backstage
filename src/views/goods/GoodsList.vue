@@ -54,7 +54,7 @@
     </el-table>
   </div>
   <CreateGoods v-model="dialog.createGoods" v-model:formModel="goodsForm" />
-  <BulkActionBar />
+  <BulkActionBar :selectedCount />
 </template>
 
 <script setup>
@@ -88,11 +88,15 @@ const clickToSelect = row => {
 // 處理選取狀態變化，更新 multipleSelection
 const handleSelectionChange = val => {
   multipleSelection.value = val;
-  console.log('Selected rows:', multipleSelection.value);
+  console.log('Selected rows:', val);
+  // console.log('Selected Count:', multipleTableRef.value.length);
+  console.log('Selected Count:', selectedCount.value);
 };
 
+const selectedCount = computed(() => multipleSelection.value.length);
+
 // 獲取目前選擇的資料（如果需要其他處理）
-const getSelectedTableData = () => multipleTableRef.value.getSelectionRows();
+// const getSelectedTableData = () => multipleTableRef.value.getSelectionRows();
 
 const dialog = ref({
   createGoods: false,
