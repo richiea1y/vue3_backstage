@@ -80,6 +80,7 @@ export function useGoodsList() {
   }
 
   const postDeleteGoods = async (id) => {
+    // return true/false for the optimistic logic to work:
     try {
       const res = await removeGoods(id);
       if (!res || res.data.Code !== 200) {
@@ -88,7 +89,7 @@ export function useGoodsList() {
       }
 
       console.log('### GOODS DELETE RES: ', res.data);
-
+      return true;
     } catch (err) {
       console.error('Failed to delete goods:', err);
       return false;

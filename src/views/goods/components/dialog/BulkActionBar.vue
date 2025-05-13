@@ -1,5 +1,6 @@
 <template>
   <div
+    v-if="selectedCount"
     class="fixed z-10 bottom-20 left-1/2 transform -translate-x-1/2 flex justify-evenly gap-1.5 w-full max-w-[440px] bg-blue-900/[.95] text-slate-50 text-sm font-medium rounded-xl px-3 py-2.5"
   >
     <button class="act-bt flex items-center py-1.5 rounded-lg" @click="emit('clearSelection')">

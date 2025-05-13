@@ -63,6 +63,7 @@ import { useGoodsList } from '@/views/goods/composables';
 import CreateGoods from '@/views/goods/components/dialog/CreateGoods.vue';
 import BulkActionBar from '@/views/goods/components/dialog/BulkActionBar.vue';
 import { updateGoods } from '@/service/api';
+import { ElMessage } from 'element-plus';
 
 const {
   searchFilter,
@@ -99,20 +100,29 @@ const clearSelection = () => {
   multipleTableRef.value.clearSelection();
 };
 
-const deleteSelection = () => {
+const deleteSelection = async () => {
   // Make sure at least one item is selected
-  if (selectedCount.value === 0) {
-    return;
-  }
-  // Response format of postDeleteGoods is JSON { "ID": null }
-  const response = { ID: null };
+  if (selectedCount.value === 0) return;
+
   const idsToDelete = multipleSelection.value.map(item => item.ID);
-  idsToDelete.forEach(id => {
-    response.ID = id;
-    postDeleteGoods(response);
-  });
-  // const selectedGoodsIDs = multipleSelection.value.map(item => item.ID);
-  // console.log('Goods to delete:', selectedGoodsIDs);
+  const originalData = [...tableData.value]; // Create a copy of the original goods list that backup for rollback
+
+  // Optimistically remove items from UI
+  tableData.value = tableData.value.filter(item => !idsToDelete.includes(item.ID));
+  // Send the Delete API Request
+  for (const id of idsToDelete) {
+    const success = await postDeleteGoods({ ID: id });
+    if (!success) {
+      // ❌ Error: Rollback UI and show error if deletion fails
+      tableData.value = originalData;
+      ElMessage.error(`Failed to delete goods with ID ${id}. Rolling back...`);
+      break; // Stop further deletes
+    }
+  }
+
+  // ✅ Success: all deletes completed
+  ElMessage.success('Selected items deleted successfully!');
+  clearSelection(); // Clear selection after deletion
 };
 
 const dialog = ref({
