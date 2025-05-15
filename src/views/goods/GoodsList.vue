@@ -11,7 +11,10 @@
       </div>
       <el-button type="primary" icon="Search" @click="getGoodsListRequest(false)">Search</el-button>
     </div>
-    <el-button type="primary" plain icon="Plus" @click="dialog.createGoods = true">New Goods</el-button>
+    <div>
+      <el-button type="primary" plain icon="Plus" @click="dialog.createGoods = true">New Images</el-button>
+      <el-button type="primary" plain icon="Plus" @click="dialog.addGoods = true">New Goods</el-button>
+    </div>
   </div>
   <div class="flex flex-col p-3 my-3 bg-white rounded bd-1">
     <el-pagination
@@ -54,6 +57,7 @@
     </el-table>
   </div>
   <CreateGoods v-model="dialog.createGoods" v-model:formModel="goodsForm" />
+  <AddGoods v-model="dialog.addGoods" />
   <BulkActionBar :selectedCount @clearSelection="clearSelection" @deleteSelection="deleteSelection" />
 </template>
 
@@ -62,8 +66,9 @@ import { ref, computed, onMounted, nextTick } from 'vue';
 import { useGoodsList } from '@/views/goods/composables';
 import CreateGoods from '@/views/goods/components/dialog/CreateGoods.vue';
 import BulkActionBar from '@/views/goods/components/dialog/BulkActionBar.vue';
-import { updateGoods } from '@/service/api';
+import { addGoods, updateGoods } from '@/service/api';
 import { ElMessage } from 'element-plus';
+import AddGoods from './components/dialog/AddGoods.vue';
 
 const {
   searchFilter,
@@ -127,7 +132,8 @@ const deleteSelection = async () => {
 
 const dialog = ref({
   createGoods: false,
-  updateGoods: false
+  updateGoods: false,
+  addGoods: false
 });
 
 const onPageChange = val => {
