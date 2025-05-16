@@ -3,7 +3,6 @@ import to from 'await-to-js'
 import { getGoodsList, getGoodsType, removeGoods } from '@/service/api'
 
 export function useGoodsList() {
-
   const tableData = ref([])
   const tableLoading = ref(false)
 
@@ -80,7 +79,7 @@ export function useGoodsList() {
   }
 
   const postDeleteGoods = async (id) => {
-    // return true/false for the optimistic logic to work:
+    // Return true/false for the optimistic logic to work:
     try {
       const res = await removeGoods(id);
       if (!res || res.data.Code !== 200) {

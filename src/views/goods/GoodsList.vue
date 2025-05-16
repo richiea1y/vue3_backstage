@@ -99,8 +99,10 @@ const handleSelectionChange = val => {
   console.log('Selected Count:', selectedCount.value);
 };
 
+// 計算選取的數量
 const selectedCount = computed(() => multipleSelection.value.length);
 
+// 清除選取狀態
 const clearSelection = () => {
   multipleTableRef.value.clearSelection();
 };
