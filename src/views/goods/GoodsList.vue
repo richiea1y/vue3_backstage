@@ -57,7 +57,7 @@
     </el-table>
   </div>
   <CreateGoods v-model="dialog.createGoods" v-model:formModel="goodsForm" />
-  <AddGoods v-model="dialog.addGoods" />
+  <AddGoods v-model="dialog.addGoods" v-model:formModel="goodsForm" />
   <BulkActionBar :selectedCount @clearSelection="clearSelection" @deleteSelection="deleteSelection" />
 </template>
 
