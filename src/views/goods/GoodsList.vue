@@ -56,8 +56,8 @@
       <el-table-column prop="UnitPrice" label="價格"> </el-table-column>
     </el-table>
   </div>
-  <CreateGoods v-model="dialog.createGoods" v-model:formModel="goodsForm" />
-  <AddGoods v-model="dialog.addGoods" v-model:formModel="goodsForm" />
+  <!-- <CreateGoods v-model="dialog.createGoods" v-model:formModel="goodsForm" /> -->
+  <AddGoods @confirm="postAddGoods" v-model="dialog.addGoods" v-model:formModel="goodsForm" />
   <BulkActionBar :selectedCount @clearSelection="clearSelection" @deleteSelection="deleteSelection" />
 </template>
 
@@ -79,6 +79,7 @@ const {
   goodsTypeList,
   getGoodsListRequest,
   getGoodsTypeList,
+  postAddGoods,
   postDeleteGoods
 } = useGoodsList();
 

@@ -1,6 +1,6 @@
 <template>
   <el-dialog v-model="visible" :title="title" :width="width">
-    <el-form>
+    <el-form ref="ruleFormRef" :model="formModel" :rules="formRules">
       <!-- First row -->
       <div class="flex flex-wrap justify-between gap-4">
         <!-- 前台顯示 -->
@@ -9,28 +9,27 @@
         </el-form-item>
         <!-- 商品別名 -->
         <el-form-item prop="ImagesIdnet" label="商品別名:" class="w-[200px]">
-          <el-input type="text" placeholder="商品別名(Ident)" />
+          <el-input v-model="formModel.ImagesIdnet" type="text" placeholder="商品別名(Ident)" />
         </el-form-item>
       </div>
       <!-- Second row -->
       <div class="flex flex-wrap justify-between gap-4">
         <!-- 商品名稱 -->
         <el-form-item prop="Name" label="商品名稱:" class="w-[500px]">
-          <el-input type="text" placeholder="商品名稱" />
+          <el-input v-model="formModel.Name" type="text" placeholder="商品名稱" />
         </el-form-item>
       </div>
       <!-- Third row -->
       <div class="flex flex-wrap justify-between gap-x-4">
         <!-- 商品類別 -->
         <el-form-item prop="GoodsTypeID" label="商品類別:" class="w-[200px]">
-          <el-select placeholder="選擇商品類別" clearable>
-            <el-option label="商品類別1" value="1" />
-            <el-option label="商品類別2" value="2" />
+          <el-select v-model="formModel.GoodsTypeID" placeholder="選擇商品類別" clearable>
+            <el-option label="未分類" :value="1" />
           </el-select>
         </el-form-item>
         <!-- 商品價格 -->
         <el-form-item prop="UnitPrice" label="商品價格:" class="w-[200px]">
-          <el-input type="text" placeholder="商品價格" />
+          <el-input-number v-model="formModel.UnitPrice" :controls="false" placeholder="商品價格" />
         </el-form-item>
         <!-- 商品規格 -->
         <!-- <el-form-item label="商品規格:" class="w-[200px]">
@@ -50,6 +49,7 @@
 
 <script setup>
 import { ElMessage } from 'element-plus';
+import { ref } from 'vue';
 
 /* ----------------------
   Props
@@ -64,6 +64,11 @@ defineProps({
     default: 500
   }
 });
+
+/* ----------------------
+  Emits
+----------------------- */
+const emit = defineEmits(['close', 'confirm']);
 
 /* ----------------------
   Models
@@ -93,15 +98,39 @@ const handleCancel = () => {
   visible.value = false;
 };
 
-const handleConfirm = async () => {
-  // 發送 confirm 事件並等待父組件處理結果
-  try {
-    emit('confirm', formModel.value);
-    // 如果父組件沒有拋出錯誤，則關閉對話框
-  } catch (error) {
-    // 如果父組件拋出錯誤，對話框保持打開狀態
-    console.error('Form submission failed:', error);
+const checkPrice = (rule, value, callback) => {
+  if (isNaN(value)) {
+    callback(new Error('Price must be a number'));
+  } else if (value <= 0) {
+    callback(new Error('Price must be a positive number'));
+  } else {
+    callback();
   }
+};
+
+/** */
+
+const ruleFormRef = ref();
+
+const formRules = {
+  Name: [{ required: true, message: 'Please input the goods name', trigger: 'blur' }],
+  UnitPrice: [
+    { required: true, message: 'Please input the goods price', trigger: 'blur' },
+    { validator: checkPrice, trigger: 'blur' }
+  ],
+  ImagesIdnet: [{ required: true, message: 'Please input the goods ident', trigger: 'blur' }]
+};
+
+const submitForm = async formEl => {
+  if (!formEl) return;
+  await formEl.validate((valid, fields) => {
+    if (valid) {
+      // 發送 confirm 事件並等待父組件處理結果
+      emit('confirm', formModel.value);
+    } else {
+      console.log('error submit!!', fields);
+    }
+  });
 };
 </script>
 

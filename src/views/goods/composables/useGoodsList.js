@@ -1,6 +1,7 @@
 import { ref, onMounted, computed, nextTick } from 'vue'
 import to from 'await-to-js'
 import { addGoods, getGoodsList, getGoodsType, removeGoods } from '@/service/api'
+import { ElMessage } from 'element-plus'
 
 export function useGoodsList() {
   const tableData = ref([])
@@ -80,17 +81,22 @@ export function useGoodsList() {
 
   const postAddGoods = async (formData) => {
     // Return true/false for the optimistic logic to work:
+    console.log('🔥 送出資料:', formData);
+    console.log('🔥 型別檢查:', Object.entries(formData).map(([k, v]) => [k, typeof v]));
     try {
       const res = await addGoods(formData);
       if (!res || res.data.Code !== 200) {
         console.error('Failed to add goods:', res?.data);
+        ElMessage.error('新增失敗');
         return false;
       }
 
       console.log('### GOODS ADD RES: ', res.data);
+      ElMessage.success('新增成功');
       return true;
     } catch (err) {
       console.error('Failed to add goods:', err)
+      ElMessage.error('新增失敗');
       return false;
     }
   }
