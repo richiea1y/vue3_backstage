@@ -57,7 +57,12 @@
     </el-table>
   </div>
   <!-- <CreateGoods v-model="dialog.createGoods" v-model:formModel="goodsForm" /> -->
-  <AddGoods @confirm="postAddGoods" v-model="dialog.addGoods" v-model:formModel="goodsForm" />
+  <AddGoods
+    @confirm="postAddGoods"
+    v-model="dialog.addGoods"
+    v-model:formModel="goodsForm"
+    :goods-type-list="goodsTypeList"
+  />
   <BulkActionBar :selectedCount @clearSelection="clearSelection" @deleteSelection="deleteSelection" />
 </template>
 
@@ -108,6 +113,7 @@ const clearSelection = () => {
   multipleTableRef.value.clearSelection();
 };
 
+// 刪除選取的商項目
 const deleteSelection = async () => {
   // Make sure at least one item is selected
   if (selectedCount.value === 0) return;

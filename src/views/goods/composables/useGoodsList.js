@@ -26,7 +26,7 @@ export function useGoodsList() {
   const goodsForm = ref({
     ID: null,
     Show: true,
-    GoodsTypeID: 0,
+    GoodsTypeID: 1, // 預設值為 1
     Name: '',
     SpecsAllowance: 0,
     GoodsSpecs: [],

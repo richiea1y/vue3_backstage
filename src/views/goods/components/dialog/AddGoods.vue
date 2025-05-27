@@ -24,7 +24,7 @@
         <!-- 商品類別 -->
         <el-form-item prop="GoodsTypeID" label="商品類別:" class="w-[200px]">
           <el-select v-model="formModel.GoodsTypeID" placeholder="選擇商品類別" clearable>
-            <el-option label="未分類" :value="1" />
+            <el-option v-for="type in goodsTypeList" :key="type.ID" :label="type.Name" :value="type.ID" />
           </el-select>
         </el-form-item>
         <!-- 商品價格 -->
@@ -62,6 +62,10 @@ defineProps({
   width: {
     type: [String, Number],
     default: 500
+  },
+  goodsTypeList: {
+    type: Array,
+    default: () => []
   }
 });
 
