@@ -62,6 +62,7 @@
     v-model="dialog.addGoods"
     v-model:formModel="goodsForm"
     :goods-type-list="goodsTypeList"
+    :table-data="tableData"
   />
   <BulkActionBar :selectedCount @clearSelection="clearSelection" @deleteSelection="deleteSelection" />
 </template>
@@ -157,7 +158,7 @@ const onPageSizeChange = val => {
 };
 
 onMounted(async () => {
-  await nextTick();
+  await nextTick(); // Wait for the DOM to update
   getGoodsTypeList();
   getGoodsListRequest(false);
 });

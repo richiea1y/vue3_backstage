@@ -8,8 +8,13 @@
           <el-switch v-model="formModel.Show" />
         </el-form-item>
         <!-- 商品別名 -->
-        <el-form-item prop="ImagesIdnet" label="商品別名:" class="w-[200px]">
-          <el-input v-model="formModel.ImagesIdnet" type="text" placeholder="商品別名(Ident)" />
+        <el-form-item prop="ImagesIdnet" label="商品別名:" class="w-[260px]">
+          <div class="flex items-center gap-3">
+            <el-input v-model="formModel.ImagesIdnet" type="text" placeholder="商品別名(Ident)" />
+            <button @click="rollbackIdent" class="cursor-pointer">
+              <RotateCcw class="w-5 h-5" />
+            </button>
+          </div>
         </el-form-item>
       </div>
       <!-- Second row -->
@@ -49,12 +54,14 @@
 
 <script setup>
 import { ElMessage } from 'element-plus';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import { nanoid } from 'nanoid';
+import { RotateCcw } from 'lucide-vue-next';
 
 /* ----------------------
   Props
 ----------------------- */
-defineProps({
+const props = defineProps({
   title: {
     type: String,
     default: '新增商品'
@@ -66,6 +73,10 @@ defineProps({
   goodsTypeList: {
     type: Array,
     default: () => []
+  },
+  tableData: {
+    type: Array,
+    required: true
   }
 });
 
@@ -115,6 +126,7 @@ const checkPrice = (rule, value, callback) => {
 /** */
 
 const ruleFormRef = ref();
+const autoIdent = ref(''); // Auto-generated ident for images
 
 const formRules = {
   Name: [{ required: true, message: 'Please input the goods name', trigger: 'blur' }],
@@ -137,6 +149,49 @@ const submitForm = async formEl => {
   });
   visible.value = false; // Close dialog after submission
 };
+
+const checkIdentUnique = (genIdent, dataSources) => {
+  const isUnique = dataSources.find(item => item.ImagesIdnet === genIdent);
+  return isUnique ? false : true;
+};
+
+const rollbackIdent = () => {
+  // Reset ident to auto-generated value
+  formModel.value.ImagesIdnet = autoIdent.value;
+};
+
+/** Watcher */
+watch(
+  () => visible.value,
+  async newVal => {
+    try {
+      if (newVal) {
+        // Generate a unique ident when dialog is opened
+        let tries = 0;
+        let candidate = '';
+        do {
+          candidate = `UNC-${nanoid(10)}`;
+          tries++;
+          console.log('Table data:', props.tableData[0]?.ImagesIdnet);
+          if (tries > 10) {
+            throw new Error('Failed to generate a unique ident after 100 attempts');
+            console.error('已嘗試產生 100 次識別碼仍重複，請確認 tableData 是否有異常');
+          }
+          console.log(`🌀 checkIdentUnique(${candidate}) =`, checkIdentUnique(candidate, props.tableData));
+          // Check if the generated ident is unique
+          // If not, generate a new one
+        } while (!checkIdentUnique(candidate, props.tableData));
+        autoIdent.value = candidate;
+        formModel.value.ImagesIdnet = autoIdent.value;
+      } else {
+        // Reset ident when dialog is closed
+        autoIdent.value = '';
+      }
+    } catch (err) {
+      console.error('Unhandled error during ident generation in watcher:', err);
+    }
+  }
+);
 </script>
 
 <style lang="scss" scoped></style>

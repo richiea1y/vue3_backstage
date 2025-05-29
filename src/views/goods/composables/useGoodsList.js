@@ -1,4 +1,4 @@
-import { ref, onMounted, computed, nextTick } from 'vue'
+import { ref, onMounted, computed, nextTick, watch } from 'vue'
 import to from 'await-to-js'
 import { addGoods, getGoodsList, getGoodsType, removeGoods } from '@/service/api'
 import { ElMessage } from 'element-plus'
