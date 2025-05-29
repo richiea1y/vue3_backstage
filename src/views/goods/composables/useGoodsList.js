@@ -35,6 +35,20 @@ export function useGoodsList() {
     Description: ''
   })
 
+  const resetGoodsForm = () => {
+    goodsForm.value = {
+      ID: null,
+      Show: true,
+      GoodsTypeID: 1, // 預設值為 1
+      Name: '',
+      SpecsAllowance: 0,
+      GoodsSpecs: [],
+      UnitPrice: 0,
+      ImagesIdnet: '',
+      Description: ''
+    }
+  }
+
   const goodsTypeList = ref([])
 
   /** Goods Type List request */
@@ -79,13 +93,23 @@ export function useGoodsList() {
     console.log('### GOODS LIST RES: ', tableData.value)
   }
 
+
+
   const postAddGoods = async (formData) => {
     // Return true/false for the optimistic logic to work:
     console.log('🔥 送出資料:', formData);
     console.log('🔥 型別檢查:', Object.entries(formData).map(([k, v]) => [k, typeof v]));
+
+    const originalData = [...tableData.value]; // Create a copy of the original goods list that backup for rollback
+
+    // Optimistically remove items from UI
+    tableData.value.push(formData);
+
     try {
       const res = await addGoods(formData);
       if (!res || res.data.Code !== 200) {
+        // ❌ Error: Rollback UI and show error if deletion fails
+        tableData.value = originalData;
         console.error('Failed to add goods:', res?.data);
         ElMessage.error('新增失敗');
         return false;
@@ -93,13 +117,23 @@ export function useGoodsList() {
 
       console.log('### GOODS ADD RES: ', res.data);
       ElMessage.success('新增成功');
+
+      // ✅ Success: Update the formData with the new ID and Name
+      formData.ID = res.data.Data?.ID;
+      formData.Name = res.data.Data?.Name;
+      resetGoodsForm();
       return true;
     } catch (err) {
+      // ❌ Error: Rollback UI and show error if deletion fails
+      tableData.value = originalData;
       console.error('Failed to add goods:', err)
       ElMessage.error('新增失敗');
+      resetGoodsForm();
       return false;
     }
   }
+
+  /** 刪除商品 */
 
   const postDeleteGoods = async (id) => {
     // Return true/false for the optimistic logic to work:
@@ -128,6 +162,6 @@ export function useGoodsList() {
     getGoodsListRequest,
     getGoodsTypeList,
     postAddGoods,
-    postDeleteGoods,
+    postDeleteGoods
   }
 }

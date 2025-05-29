@@ -135,6 +135,7 @@ const submitForm = async formEl => {
       console.log('error submit!!', fields);
     }
   });
+  visible.value = false; // Close dialog after submission
 };
 </script>
 
