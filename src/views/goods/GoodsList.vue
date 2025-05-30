@@ -56,7 +56,7 @@
       <el-table-column prop="UnitPrice" label="價格"> </el-table-column>
     </el-table>
   </div>
-  <!-- <CreateGoods v-model="dialog.createGoods" v-model:formModel="goodsForm" /> -->
+  <CreateGoods v-model="dialog.createGoods" v-model:formModel="goodsForm" />
   <AddGoods
     @confirm="postAddGoods"
     v-model="dialog.addGoods"

@@ -8,7 +8,7 @@
           <el-switch v-model="formModel.Show" />
         </el-form-item>
         <!-- 商品別名 -->
-        <el-form-item prop="ImagesIdnet" label="商品別名:" class="w-[260px]">
+        <el-form-item prop="ImagesIdnet" label="商品別名:" class="w-[270px]">
           <div class="flex items-center gap-3">
             <el-input v-model="formModel.ImagesIdnet" type="text" placeholder="商品別名(Ident)" />
             <button @click="rollbackIdent" class="cursor-pointer">
@@ -42,6 +42,24 @@
         </el-form-item> -->
       </div>
       <!-- 商品圖片上傳 -->
+      <el-form-item label="圖片上傳:" prop="ImagesIdnet">
+        <div class="flex flex-col w-full gap-2">
+          <label class="upload-customize">
+            <span class="upload-btn">
+              <el-icon><PictureFilled /></el-icon>
+              選擇圖片
+            </span>
+            <input type="file" @change="selectFile($event)" />
+          </label>
+          <span class="upload-file-name mx-2"
+            >選擇圖檔:
+            <span :class="fileSizeExceeded ? 'fileNameColor' : 'fileNameWramning'">{{
+              filesModel.imgFileName
+            }}</span></span
+          >
+        </div>
+        <div class="goods-img-preview"></div>
+      </el-form-item>
     </el-form>
     <template #footer>
       <div class="dialog-footer">
@@ -160,6 +178,42 @@ const rollbackIdent = () => {
   formModel.value.ImagesIdnet = autoIdent.value;
 };
 
+/** Image Upload */
+// const getGoodsImgs = computed(() => {
+//   return filesModel.value.goodsImg[formModel.value.ImagesIdnet];
+// });
+
+let fileSizeExceeded = ref(false); // Flag to track if file size exceeds limit
+
+const filesModel = ref({
+  imgFile: null,
+  imgFileName: '',
+  imgIdent: '',
+  goodsImg: {}
+});
+
+const selectFile = async event => {
+  fileSizeExceeded = false;
+  console.log('###event: ', event);
+  const file = event.target.files[0];
+  const fileSize = file.size / 1024; // Convert to KB
+
+  // 可上傳的檔案類別: jpg, jpeg, png, webp, gif
+  filesModel.value.imgFile = file;
+  filesModel.value.imgFileName = file.name;
+  filesModel.value.imgIdent = formModel.value.ImagesIdnet; // Associate file with the current ident
+
+  console.log('File size:', (file.size / 1024).toFixed(2), 'KB'), filesModel.value.imgFile;
+
+  if (fileSize > 250) {
+    // Limit file size to 250KB
+    fileSizeExceeded = true;
+    ElMessage.error('File size exceeds 250KB limit');
+    filesModel.value.imgFileName = '檔案不可大於 250KB，請重新選擇圖片';
+    return;
+  }
+};
+
 /** Watcher */
 watch(
   () => visible.value,
@@ -194,4 +248,55 @@ watch(
 );
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.upload-customize {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: auto;
+  height: 34px;
+  cursor: pointer;
+  span {
+    display: inline-flex;
+    font-size: 0.85rem;
+    padding: 0 16px 0 10px;
+    white-space: nowrap;
+    &.upload-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #d9d9d9;
+      border-radius: 34px;
+      background-color: #333;
+      .el-icon {
+        width: 16px;
+        height: 16px;
+        margin-right: 5px;
+      }
+    }
+  }
+  input[type='file'] {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 1px;
+    opacity: 0; /* Hide the file input */
+  }
+}
+
+.upload-file-name {
+  display: block;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fileNameColor {
+  color: red;
+}
+.fileNameWramning {
+  color: #3256ca;
+}
+</style>
