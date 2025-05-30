@@ -53,12 +53,12 @@
           </label>
           <span class="upload-file-name mx-2"
             >選擇圖檔:
-            <span :class="fileSizeExceeded ? 'fileNameColor' : 'fileNameWramning'">{{
-              filesModel.imgFileName
-            }}</span></span
-          >
+            <span :class="fileSizeExceeded ? 'fileNameColor' : 'fileNameWramning'">{{ filesModel.imgFileName }}</span>
+          </span>
         </div>
-        <div class="goods-img-preview"></div>
+        <div class="goods-img-preview">
+          <img v-if="filesModel.imgFile" :src="previewUrl" />
+        </div>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -72,7 +72,7 @@
 
 <script setup>
 import { ElMessage } from 'element-plus';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { nanoid } from 'nanoid';
 import { RotateCcw } from 'lucide-vue-next';
 
@@ -179,11 +179,9 @@ const rollbackIdent = () => {
 };
 
 /** Image Upload */
-// const getGoodsImgs = computed(() => {
-//   return filesModel.value.goodsImg[formModel.value.ImagesIdnet];
-// });
 
 let fileSizeExceeded = ref(false); // Flag to track if file size exceeds limit
+let previewUrl = null; // URL for the image preview
 
 const filesModel = ref({
   imgFile: null,
@@ -197,13 +195,16 @@ const selectFile = async event => {
   console.log('###event: ', event);
   const file = event.target.files[0];
   const fileSize = file.size / 1024; // Convert to KB
+  if (previewUrl) URL.revokeObjectURL(previewUrl); // Clean up previous URL
 
+  previewUrl = URL.createObjectURL(file); // Create a new URL for the image preview
   // 可上傳的檔案類別: jpg, jpeg, png, webp, gif
   filesModel.value.imgFile = file;
   filesModel.value.imgFileName = file.name;
   filesModel.value.imgIdent = formModel.value.ImagesIdnet; // Associate file with the current ident
 
-  console.log('File size:', (file.size / 1024).toFixed(2), 'KB'), filesModel.value.imgFile;
+  console.log('File size:', (file.size / 1024).toFixed(2), 'KB', filesModel.value.imgFile);
+  console.log('FileModel', filesModel.value);
 
   if (fileSize > 250) {
     // Limit file size to 250KB
@@ -228,8 +229,8 @@ watch(
           tries++;
           console.log('Table data:', props.tableData[0]?.ImagesIdnet);
           if (tries > 10) {
-            throw new Error('Failed to generate a unique ident after 100 attempts');
-            console.error('已嘗試產生 100 次識別碼仍重複，請確認 tableData 是否有異常');
+            throw new Error('Failed to generate a unique ident after 10 attempts');
+            console.error('已嘗試產生 10 次識別碼仍重複，請確認 tableData 是否有異常');
           }
           console.log(`🌀 checkIdentUnique(${candidate}) =`, checkIdentUnique(candidate, props.tableData));
           // Check if the generated ident is unique
@@ -298,5 +299,17 @@ watch(
 }
 .fileNameWramning {
   color: #3256ca;
+}
+
+.goods-img-preview {
+  display: block;
+  width: 100%;
+  padding: 1rem 0;
+  img {
+    max-width: 100%;
+    height: 150px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
 }
 </style>
