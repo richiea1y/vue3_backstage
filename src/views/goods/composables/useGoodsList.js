@@ -2,10 +2,13 @@ import { ref, onMounted, computed, nextTick, watch } from 'vue'
 import to from 'await-to-js'
 import { addGoods, getGoodsList, getGoodsType, removeGoods } from '@/service/api'
 import { ElMessage } from 'element-plus'
+import { useOptimistic } from '@/views/goods/composables/useOptimistic'
 
 export function useGoodsList() {
   const tableData = ref([])
   const tableLoading = ref(false)
+
+  const { optimisticAdd } = useOptimistic(tableData);
 
   /** 搜尋 UI 應綁定的對象在這 */
   const searchFilter = ref({
@@ -96,45 +99,25 @@ export function useGoodsList() {
 
 
   const postAddGoods = async (formData) => {
-    // Return true/false for the optimistic logic to work:
-    console.log('🔥 送出資料:', formData);
-    console.log('🔥 型別檢查:', Object.entries(formData).map(([k, v]) => [k, typeof v]));
-
-    const originalData = [...tableData.value]; // Create a copy of the original goods list that backup for rollback
-
-    // Optimistically remove items from UI
-    tableData.value.push(formData);
-
-    try {
-      const res = await addGoods(formData);
-      if (!res || res.data.Code !== 200) {
-        // ❌ Error: Rollback UI and show error if deletion fails
-        tableData.value = originalData;
-        console.error('Failed to add goods:', res?.data);
+    return await optimisticAdd({
+      data: formData,
+      requestFn: addGoods,
+      onSuccess: (resData, data) => {
+        // 成功後的處理邏輯，這裡可以更新 UI 或做其他操作
+        console.log('Optimistic add success:', resData, data);
+        formData.ID = resData.Data?.ID;
+        formData.Name = resData.Data?.Name;
+        resetGoodsForm();
+      },
+      onRollBack: () => {
+        // 回滾時的處理邏輯
         ElMessage.error('新增失敗');
-        return false;
+        resetGoodsForm();
       }
-
-      console.log('### GOODS ADD RES: ', res.data);
-      ElMessage.success('新增成功');
-
-      // ✅ Success: Update the formData with the new ID and Name
-      formData.ID = res.data.Data?.ID;
-      formData.Name = res.data.Data?.Name;
-      resetGoodsForm();
-      return true;
-    } catch (err) {
-      // ❌ Error: Rollback UI and show error if deletion fails
-      tableData.value = originalData;
-      console.error('Failed to add goods:', err)
-      ElMessage.error('新增失敗');
-      resetGoodsForm();
-      return false;
-    }
+    })
   }
 
   /** 刪除商品 */
-
   const postDeleteGoods = async (id) => {
     // Return true/false for the optimistic logic to work:
     try {
