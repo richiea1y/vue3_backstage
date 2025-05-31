@@ -75,6 +75,8 @@ import { ElMessage } from 'element-plus';
 import { computed, ref, watch } from 'vue';
 import { nanoid } from 'nanoid';
 import { RotateCcw } from 'lucide-vue-next';
+import to from 'await-to-js';
+import { uploadImg } from '@/service/api';
 
 /* ----------------------
   Props
@@ -157,9 +159,12 @@ const formRules = {
 
 const submitForm = async formEl => {
   if (!formEl) return;
-  await formEl.validate((valid, fields) => {
+  await formEl.validate(async (valid, fields) => {
     if (valid) {
-      // 發送 confirm 事件並等待父組件處理結果
+      // ✅ 圖片上傳
+      await handleUpload();
+
+      // ✅ 發送表單資料，發送 confirm 事件並等待父組件處理結果
       emit('confirm', formModel.value);
     } else {
       console.log('error submit!!', fields);
@@ -195,10 +200,15 @@ const selectFile = async event => {
   console.log('###event: ', event);
   const file = event.target.files[0];
   const fileSize = file.size / 1024; // Convert to KB
-  if (previewUrl) URL.revokeObjectURL(previewUrl); // Clean up previous URL
 
-  previewUrl = URL.createObjectURL(file); // Create a new URL for the image preview
+  // Clean up previous URL
+  if (previewUrl) URL.revokeObjectURL(previewUrl);
+
+  // Create a new URL for the image preview
+  previewUrl = URL.createObjectURL(file);
+
   // 可上傳的檔案類別: jpg, jpeg, png, webp, gif
+  // 更新預覽圖片
   filesModel.value.imgFile = file;
   filesModel.value.imgFileName = file.name;
   filesModel.value.imgIdent = formModel.value.ImagesIdnet; // Associate file with the current ident
@@ -213,6 +223,32 @@ const selectFile = async event => {
     filesModel.value.imgFileName = '檔案不可大於 250KB，請重新選擇圖片';
     return;
   }
+};
+
+const handleUpload = async () => {
+  const formData = new FormData(); // Create a new FormData object for file upload
+  formData.append('Ident', formModel.value.ImagesIdnet); // Append the ident to the form data
+  formData.append('Img', filesModel.value.imgFile); // Append the selected file
+
+  const [err, res] = await to(uploadImg(formData)); // Call the uploadImg function with the form data
+  if (err) {
+    ElMessage.error('Image upload failed: ' + (err?.response?.data?.Msg || err?.message || 'Unknown error occurred'));
+    return;
+  }
+
+  ElMessage.success('Image uploaded successfully!');
+
+  // 確認在 goodsImg 物件中是否已經存在某個圖片的 Ident (識別碼) 作為 Key，保證某個 Ident 有一個對應的陣列存在於 goodsImg 中，，才能 .push(…) 圖片資料
+  if (!filesModel.value.goodsImg.hasOwnProperty(formModel.value.ImagesIdnet)) {
+    // Initialize the goodsImg object if it doesn't exist
+    filesModel.value.goodsImg[formModel.value.ImagesIdnet] = [];
+  }
+
+  filesModel.value.goodsImg[formModel.value.ImagesIdnet].push({
+    ID: res.data.ID, // Assuming res.data.ID contains the image ID
+    Url: res.data.Url, // Assuming res.data.Url contains the image URL
+    Ident: formModel.value.ImagesIdnet // Associate the image with the current ident
+  });
 };
 
 /** Watcher */
