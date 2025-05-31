@@ -30,9 +30,36 @@ export function useOptimistic(listRef) {
   };
 
   /** Delete */
-  const optimisticDelete = async ({ id, requestFn, onSuccess, onRollBack }) => {
+  const optimisticDelete = async ({ itemToDelete, requestFn, onSuccess, onRollBack }) => {
+    const index = listRef.value.findIndex(item => item?.ID === itemToDelete.ID);
+    if (index === -1) return false;
 
+    // 儲存被刪除的項目以便回滾
+    const deletedItem = listRef.value[index];
+    // Optimistically remove from UI
+    listRef.value.splice(index, 1);
+
+    const [err, res] = await to(requestFn(itemToDelete));
+
+    // 如果 API 回傳錯誤，則回滾到之前的狀態
+    if (!res || res.data.Code !== 200) {
+      console.error('⚠️ Delete API error:', res?.data);
+      listRef.value.splice(index, 0, deletedItem); // Rollback
+      onRollBack?.(null, res);
+      return false;
+    }
+
+    // 如果 JS / Axios 有錯誤，則回滾到之前的狀態
+    if (err) {
+      console.error('❌ Delete network error:', err);
+      listRef.value.splice(index, 0, deletedItem); // Rollback
+      onRollBack?.(err, null);
+      return false;
+    }
+
+    onSuccess?.(res.data, deletedItem);
+    return true;
   };
 
-  return { optimisticAdd };
+  return { optimisticAdd, optimisticDelete };
 }

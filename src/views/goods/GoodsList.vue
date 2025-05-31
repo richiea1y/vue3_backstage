@@ -116,27 +116,16 @@ const clearSelection = () => {
 
 // 刪除選取的商項目
 const deleteSelection = async () => {
-  // Make sure at least one item is selected
-  if (selectedCount.value === 0) return;
-
-  const idsToDelete = multipleSelection.value.map(item => item.ID);
-  const originalData = [...tableData.value]; // Create a copy of the original goods list that backup for rollback
-
-  // Optimistically remove items from UI
-  tableData.value = tableData.value.filter(item => !idsToDelete.includes(item.ID));
-  // Send the Delete API Request
-  for (const id of idsToDelete) {
-    const success = await postDeleteGoods({ ID: id });
+  for (let item of multipleSelection.value) {
+    const success = await postDeleteGoods(item); // ✅ 傳整筆 item
     if (!success) {
-      // ❌ Error: Rollback UI and show error if deletion fails
-      tableData.value = originalData;
-      ElMessage.error(`Failed to delete goods with ID ${id}. Rolling back...`);
-      break; // Stop further deletes
+      ElMessage.error(`刪除失敗：${item.Name}`);
+      break;
     }
   }
 
   // ✅ Success: all deletes completed
-  ElMessage.success('Selected items deleted successfully!');
+  ElMessage.success('已刪除選取的項目');
   clearSelection(); // Clear selection after deletion
 };
 

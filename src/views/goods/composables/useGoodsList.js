@@ -8,7 +8,7 @@ export function useGoodsList() {
   const tableData = ref([])
   const tableLoading = ref(false)
 
-  const { optimisticAdd } = useOptimistic(tableData);
+  const { optimisticAdd, optimisticDelete } = useOptimistic(tableData);
 
   /** 搜尋 UI 應綁定的對象在這 */
   const searchFilter = ref({
@@ -118,21 +118,19 @@ export function useGoodsList() {
   }
 
   /** 刪除商品 */
-  const postDeleteGoods = async (id) => {
-    // Return true/false for the optimistic logic to work:
-    try {
-      const res = await removeGoods(id);
-      if (!res || res.data.Code !== 200) {
-        console.error('Failed to delete goods:', res?.data);
-        return false;
+  const postDeleteGoods = async (item) => {
+    return await optimisticDelete({
+      itemToDelete: item,
+      requestFn: (target) => removeGoods({ ID: target.ID }),
+      onSuccess: (resData, deletedItem) => {
+        // 成功後的處理邏輯，這裡可以更新 UI 或做其他操作
+        console.log('Optimistic delete success:', resData, deletedItem);
+      },
+      onRollBack: (err, res) => {
+        // 回滾時的處理邏輯
+        console.error('Rollback due to error:', err || res);
       }
-
-      console.log('### GOODS DELETE RES: ', res.data);
-      return true;
-    } catch (err) {
-      console.error('Failed to delete goods:', err);
-      return false;
-    }
+    })
   }
 
   return {
