@@ -33,7 +33,6 @@
       row-key="ID"
       :data="tableData"
       flexible
-      stripe
       style="width: 100%"
       v-loading="tableLoading"
       @selection-change="handleSelectionChange"
@@ -55,6 +54,7 @@
       </el-table-column>
       <el-table-column prop="UnitPrice" label="價格"> </el-table-column>
     </el-table>
+    <BulkActionBar :selectedCount @clearSelection="clearSelection" @deleteSelection="deleteSelection" />
   </div>
   <CreateGoods v-model="dialog.createGoods" v-model:formModel="goodsForm" />
   <AddGoods
@@ -64,7 +64,6 @@
     :goods-type-list="goodsTypeList"
     :table-data="tableData"
   />
-  <BulkActionBar :selectedCount @clearSelection="clearSelection" @deleteSelection="deleteSelection" />
 </template>
 
 <script setup>
