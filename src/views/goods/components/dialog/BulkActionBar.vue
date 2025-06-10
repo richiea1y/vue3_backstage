@@ -1,9 +1,9 @@
 <template>
   <div class="act-bar-container">
-    <div class="modal">
-      <ul class="flex gap-3 justify-start items-center py-1">
-        <li>
-          <button class="flex gap-3 justify-start items-center px-3 py-1">
+    <div v-if="optionDialog" class="modal">
+      <ul class="flex gap-3 items-center py-1">
+        <li @click="openFileDialog">
+          <button class="flex gap-3 items-center px-3 py-1">
             <ImageUp class="ImageUp w-5" />
             Change Image
           </button>
@@ -42,22 +42,60 @@
           <div class="pr-2">Delete</div>
         </button>
       </div>
-      <button class="act-bt flex items-center py-1.5 rounded-lg">
+      <button @click="handleOptionClick" class="act-bt flex items-center py-1.5 rounded-lg">
         <img src="@/assets/icon/ellipsis.svg" class="white-icon text-slate-50 px-2 max-w-8" />
         <div class="pr-2">More</div>
       </button>
     </div>
   </div>
+  <input ref="fileInput" type="file" accept="image/*" @change="handleImageChange" class="hidden" />
 </template>
 
 <script setup>
+import { ref, watch } from 'vue';
 import { ImageUp } from 'lucide-vue-next';
+import { ElMessage } from 'element-plus';
+
+const fileInput = ref(null);
 
 const props = defineProps({
-  selectedCount: Number
+  selectedCount: Number,
+  multipleSelection: Array
 });
 
-const emit = defineEmits(['clearSelection', 'deleteSelection']);
+const emit = defineEmits(['clearSelection', 'deleteSelection', 'updateImage']);
+
+// Option dialog state
+const optionDialog = ref(false);
+
+watch(
+  () => props.multipleSelection,
+  newVal => {
+    // Close the option dialog when selection changes
+    if (newVal.length === 0) {
+      optionDialog.value = false;
+    }
+  },
+  { immediate: true }
+);
+
+const handleOptionClick = () => {
+  optionDialog.value = !optionDialog.value;
+};
+
+const openFileDialog = () => {
+  // Logic to open file dialog
+  optionDialog.value = false; // Close the options dialog
+  if (props.multipleSelection.length !== 1) {
+    ElMessage.error('Please select only one item to change the image.');
+    return;
+  }
+  fileInput.value?.click();
+};
+const handleImageChange = () => {
+  console.log('Selected Image:', fileInput.value.files[0], props.multipleSelection[0].ID);
+  emit('updateImage', fileInput.value.files, props.multipleSelection[0].ID);
+};
 </script>
 
 <style lang="scss" scoped>
@@ -70,6 +108,7 @@ const emit = defineEmits(['clearSelection', 'deleteSelection']);
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  transition: all 0.3s ease-in-out;
 }
 
 .act-bt:hover {

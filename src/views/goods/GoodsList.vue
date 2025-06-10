@@ -54,7 +54,13 @@
       </el-table-column>
       <el-table-column prop="UnitPrice" label="價格"> </el-table-column>
     </el-table>
-    <BulkActionBar :selectedCount @clearSelection="clearSelection" @deleteSelection="deleteSelection" />
+    <BulkActionBar
+      :selectedCount
+      :multipleSelection
+      @clearSelection="clearSelection"
+      @deleteSelection="deleteSelection"
+      @updateImage="getUpdateImage"
+    />
   </div>
   <CreateGoods v-model="dialog.createGoods" v-model:formModel="goodsForm" />
   <AddGoods
@@ -85,7 +91,9 @@ const {
   getGoodsListRequest,
   getGoodsTypeList,
   postAddGoods,
-  postDeleteGoods
+  postDeleteGoods,
+  postDeleteGoodsImage,
+  resetForm
 } = useGoodsList();
 
 const multipleTableRef = ref(); // Table reference
@@ -113,7 +121,7 @@ const clearSelection = () => {
   multipleTableRef.value.clearSelection();
 };
 
-// 刪除選取的商項目
+// 刪除選取的商品項目
 const deleteSelection = async () => {
   for (let item of multipleSelection.value) {
     const success = await postDeleteGoods(item); // ✅ 傳整筆 item
@@ -126,6 +134,29 @@ const deleteSelection = async () => {
   // ✅ Success: all deletes completed
   ElMessage.success('已刪除選取的項目');
   clearSelection(); // Clear selection after deletion
+};
+
+const getUpdateImage = async (imageFile, selectedGoodsID) => {
+  const filesModel = ref({
+    imgFile: null,
+    imgFileName: '',
+    imgIdent: '',
+    goodsImg: {}
+  });
+
+  // Fill the file and name of filesModel with the selected image file
+  filesModel.value.imgFile = imageFile;
+  console.log('Selected Image File:', imageFile);
+  filesModel.value.imgFileName = imageFile.name;
+  console.log('Selected Image File Name:', filesModel.value.imgFileName);
+
+  // Set the imgIdent by the selectedGoodsID
+  console.log('Ident for selected image:', selectedGoodsID);
+  const deleteImageSuccess = await postDeleteGoodsImage(selectedGoodsID); // Delete existing images
+  if (!deleteImageSuccess) {
+    ElMessage.error('刪除舊圖片失敗');
+    return;
+  }
 };
 
 const dialog = ref({

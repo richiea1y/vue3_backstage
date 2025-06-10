@@ -186,7 +186,7 @@ const rollbackIdent = () => {
 /** Image Upload */
 
 let fileSizeExceeded = ref(false); // Flag to track if file size exceeds limit
-let previewUrl = null; // URL for the image preview
+let previewUrl = ref(null); // URL for the image preview
 
 const filesModel = ref({
   imgFile: null,
@@ -209,9 +209,12 @@ const selectFile = async event => {
 
   // 可上傳的檔案類別: jpg, jpeg, png, webp, gif
   // 更新預覽圖片
-  filesModel.value.imgFile = file;
-  filesModel.value.imgFileName = file.name;
-  filesModel.value.imgIdent = formModel.value.ImagesIdnet; // Associate file with the current ident
+  Object.assign(filesModel.value, {
+    imgFile: file,
+    imgFileName: file.name,
+    // Associate file with the current ident
+    imgIdent: formModel.value.ImagesIdnet
+  });
 
   console.log('File size:', (file.size / 1024).toFixed(2), 'KB', filesModel.value.imgFile);
   console.log('FileModel', filesModel.value);
@@ -249,6 +252,13 @@ const handleUpload = async () => {
     Url: res.data.Url, // Assuming res.data.Url contains the image URL
     Ident: formModel.value.ImagesIdnet // Associate the image with the current ident
   });
+
+  // Reset the file input and preview URL after successful upload
+  filesModel.value.imgFile = null;
+  filesModel.value.imgFileName = '';
+  filesModel.value.imgIdent = '';
+  previewUrl = null;
+  console.log('Updated goodsImg:', filesModel.value.goodsImg);
 };
 
 /** Watcher */

@@ -1,14 +1,14 @@
-import { ref, onMounted, computed, nextTick, watch } from 'vue'
-import to from 'await-to-js'
-import { addGoods, getGoodsList, getGoodsType, removeGoods } from '@/service/api'
-import { ElMessage } from 'element-plus'
+import { addGoods, getGoodsList, getGoodsType, removeGoods, uploadImg, removeImg } from '@/service/api'
 import { useOptimistic } from '@/views/goods/composables/useOptimistic'
+import to from 'await-to-js'
+import { ElMessage } from 'element-plus'
+import { ref } from 'vue'
 
 export function useGoodsList() {
   const tableData = ref([])
   const tableLoading = ref(false)
 
-  const { optimisticAdd, optimisticDelete } = useOptimistic(tableData);
+  const { optimisticAdd, optimisticDelete, optimisticDeleteImage } = useOptimistic(tableData);
 
   /** 搜尋 UI 應綁定的對象在這 */
   const searchFilter = ref({
@@ -51,6 +51,11 @@ export function useGoodsList() {
       Description: ''
     }
   }
+
+  /** 圖片檔案 */
+
+
+  /** 商品類型列表 */
 
   const goodsTypeList = ref([])
 
@@ -96,8 +101,7 @@ export function useGoodsList() {
     console.log('### GOODS LIST RES: ', tableData.value)
   }
 
-
-
+  /** 新增商品 */
   const postAddGoods = async (formData) => {
     return await optimisticAdd({
       data: formData,
@@ -107,6 +111,7 @@ export function useGoodsList() {
         console.log('Optimistic add success:', resData, data);
         formData.ID = resData.Data?.ID;
         formData.Name = resData.Data?.Name;
+        getGoodsListRequest(true)
         resetGoodsForm();
       },
       onRollBack: () => {
@@ -133,6 +138,23 @@ export function useGoodsList() {
     })
   }
 
+  /** 刪除商品圖片 */
+  const postDeleteGoodsImage = async (goodsIdToDeleteImage) => {
+    return await optimisticDeleteImage({
+      goodsIdToDeleteImage,
+      requestFn: (target) => removeImg({ id: target }),
+      onSuccess: (resData, deletedImage) => {
+        // 成功後的處理邏輯，這裡可以更新 UI 或做其他操作
+        getGoodsListRequest(true);
+        console.log('Optimistic delete image success:', resData, deletedImage);
+      },
+      onRollBack: (err, res) => {
+        // 回滾時的處理邏輯
+        console.error('Rollback due to error:', err || res);
+      }
+    })
+  }
+
   return {
     searchFilter,
     tableData,
@@ -143,6 +165,8 @@ export function useGoodsList() {
     getGoodsListRequest,
     getGoodsTypeList,
     postAddGoods,
-    postDeleteGoods
+    postDeleteGoods,
+    postDeleteGoodsImage,
+    resetGoodsForm
   }
 }
