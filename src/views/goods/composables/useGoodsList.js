@@ -68,7 +68,7 @@ export function useGoodsList() {
       return
     }
     goodsTypeList.value = res.data.Data
-    console.log('### GOODS TYPE RES: ', goodsTypeList.value)
+    // console.log('### GOODS TYPE RES: ', goodsTypeList.value)
   }
 
   /** Goods list request */
@@ -86,7 +86,7 @@ export function useGoodsList() {
       PageLimit: pagination.value.pageSize
     }
 
-    console.log('### GOODS LIST PAYLOAD: ', requestData)
+    // console.log('### GOODS LIST PAYLOAD: ', requestData)
 
     const [err, res] = await to(getGoodsList(requestData))
     tableLoading.value = false
@@ -98,7 +98,7 @@ export function useGoodsList() {
     tableData.value = res.data.Data
     pagination.value.total = res.data.TotalCount
     lastSearchFilter.value = { ...searchFilter.value }
-    console.log('### GOODS LIST RES: ', tableData.value)
+    // console.log('### GOODS LIST RES: ', tableData.value)
   }
 
   /** 新增商品 */
@@ -139,14 +139,14 @@ export function useGoodsList() {
   }
 
   /** 刪除商品圖片 */
-  const postDeleteGoodsImage = async (goodsIdToDeleteImage) => {
+  const postDeleteGoodsImage = async (index) => {
     return await optimisticDeleteImage({
-      goodsIdToDeleteImage,
+      index,
       requestFn: (target) => removeImg({ id: target }),
       onSuccess: (resData, deletedImage) => {
         // 成功後的處理邏輯，這裡可以更新 UI 或做其他操作
         getGoodsListRequest(true);
-        console.log('Optimistic delete image success:', resData, deletedImage);
+        console.log('### Optimistic delete image success:', resData, deletedImage);
       },
       onRollBack: (err, res) => {
         // 回滾時的處理邏輯

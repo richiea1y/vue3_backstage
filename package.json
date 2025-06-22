@@ -20,6 +20,7 @@
     "crypto-js": "^4.2.0",
     "dayjs": "^1.11.13",
     "element-plus": "^2.8.4",
+    "loadash": "^1.0.0",
     "lucide-vue-next": "^0.509.0",
     "nanoid": "^5.1.5",
     "pinia": "^2.3.1",

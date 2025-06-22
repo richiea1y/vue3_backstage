@@ -197,7 +197,7 @@ const filesModel = ref({
 
 const selectFile = async event => {
   fileSizeExceeded = false;
-  console.log('###event: ', event);
+  // console.log('### event: ', event);
   const file = event.target.files[0];
   const fileSize = file.size / 1024; // Convert to KB
 
@@ -216,8 +216,8 @@ const selectFile = async event => {
     imgIdent: formModel.value.ImagesIdnet
   });
 
-  console.log('File size:', (file.size / 1024).toFixed(2), 'KB', filesModel.value.imgFile);
-  console.log('FileModel', filesModel.value);
+  // console.log('File size:', (file.size / 1024).toFixed(2), 'KB', filesModel.value.imgFile);
+  // console.log('FileModel', filesModel.value);
 
   if (fileSize > 250) {
     // Limit file size to 250KB
@@ -278,7 +278,8 @@ watch(
             throw new Error('Failed to generate a unique ident after 10 attempts');
             console.error('已嘗試產生 10 次識別碼仍重複，請確認 tableData 是否有異常');
           }
-          console.log(`🌀 checkIdentUnique(${candidate}) =`, checkIdentUnique(candidate, props.tableData));
+          // console.log(`🌀 checkIdentUnique(${candidate}) =`, checkIdentUnique(candidate, props.tableData));
+
           // Check if the generated ident is unique
           // If not, generate a new one
         } while (!checkIdentUnique(candidate, props.tableData));

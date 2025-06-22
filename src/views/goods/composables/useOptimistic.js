@@ -1,10 +1,11 @@
 import to from "await-to-js"
+import cloneDeep from "lodash/cloneDeep"
 
 export function useOptimistic(listRef) {
 
   /************ Add Goods ***********/
   const optimisticAdd = async ({ data, requestFn, onSuccess, onRollBack }) => {
-    const backup = [...listRef.value]
+    const backup = cloneDeep(listRef.value)
     listRef.value.push(data)
 
     // 使用 await-to-js 來處理異步請求，如果發生錯誤，則回滾到之前的狀態
@@ -36,7 +37,7 @@ export function useOptimistic(listRef) {
     if (index === -1) return false;
 
     // 儲存被刪除的項目以便回滾
-    const deletedItem = listRef.value[index];
+    const deletedItem = cloneDeep(listRef.value[index]);
     // Optimistically remove from UI
     listRef.value.splice(index, 1);
 
@@ -63,18 +64,18 @@ export function useOptimistic(listRef) {
   };
 
   /************ Delete Image ***********/
-  const optimisticDeleteImage = async ({ goodsIdToDeleteImage, requestFn, onSuccess, onRollBack }) => {
-    // 找到要刪除圖片的商品索引
-    const index = listRef.value.findIndex(item => item?.ID === goodsIdToDeleteImage);
+  const optimisticDeleteImage = async ({ index, requestFn, onSuccess, onRollBack }) => {
+    const selectedItem = listRef.value[index];
 
     // 要刪除的商品的 ImageUrls (裡面的 ID 是圖片的 ID，用來刪除圖片用的)
-    const deletedImage = listRef.value[index]?.ImageUrls;
-    const deletedImageID = deletedImage[0]?.ID;
+    const deletedImage = selectedItem.ImageUrls; // 是陣列！！！
+    const deletedImageID = deletedImage[0].ID;
 
     // Optimistically remove image (還沒真的刪除，只是先把商品中的圖片屬性設為 null)
-    listRef.value[index].ImageUrls = null;
+    selectedItem.ImageUrls = null;
 
     const [err, res] = await to(requestFn(deletedImageID));
+    // res.data.Data 是原本刪除的圖片（是一個陣列包物件）！！！
 
     // 如果 API 回傳錯誤，則回滾到之前的狀態
     if (!res || res.data.Code !== 200) {
@@ -96,5 +97,5 @@ export function useOptimistic(listRef) {
     return true;
   }
 
-  return { optimisticAdd, optimisticDelete, optimisticDeleteImage };
+  return { optimisticAdd, optimisticDelete, optimisticDeleteImage};
 }

@@ -47,7 +47,7 @@
             v-if="row.ImageUrls && row.ImageUrls.length > 0"
             :src="row.ImageUrls[0].Url"
             alt="商品圖片"
-            class="w-[90px] aspect-auto-[1]"
+            class="w-[100px] aspect-[1/1] object-cover"
           />
           <span v-else>無圖片</span>
         </template>
@@ -56,10 +56,10 @@
     </el-table>
     <BulkActionBar
       :selectedCount
-      :multipleSelection
+      v-model:visible="dialog.editGoods"
       @clearSelection="clearSelection"
       @deleteSelection="deleteSelection"
-      @updateImage="getUpdateImage"
+      @editGoods="handleEditGoods"
     />
   </div>
   <CreateGoods v-model="dialog.createGoods" v-model:formModel="goodsForm" />
@@ -70,13 +70,19 @@
     :goods-type-list="goodsTypeList"
     :table-data="tableData"
   />
+  <EditGoods
+  :goods-type-list="goodsTypeList"
+  v-model="dialog.editGoods"
+  v-model:updatedGoods="goodsForm"
+  />
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue';
+import { ref, computed, onMounted, nextTick, watch } from 'vue';
 import { useGoodsList } from '@/views/goods/composables';
 import CreateGoods from '@/views/goods/components/dialog/CreateGoods.vue';
 import BulkActionBar from '@/views/goods/components/dialog/BulkActionBar.vue';
+import EditGoods from '@/views/goods/components/dialog/EditGoods.vue';
 import { addGoods, updateGoods } from '@/service/api';
 import { ElMessage } from 'element-plus';
 import AddGoods from './components/dialog/AddGoods.vue';
@@ -93,11 +99,22 @@ const {
   postAddGoods,
   postDeleteGoods,
   postDeleteGoodsImage,
-  resetForm
+  resetGoodsForm
 } = useGoodsList();
 
 const multipleTableRef = ref(); // Table reference
 const multipleSelection = ref([]); // Selected rows
+
+// 計算選取的數量
+const selectedCount = computed(() => multipleSelection.value.length);
+
+// Dialog visibility state
+const dialog = ref({
+  createGoods: false,
+  updateGoods: false,
+  addGoods: false,
+  editGoods: false
+});
 
 // The row-click event passes row, column, and event as parameters
 // 處理點擊行時，切換選取狀態
@@ -109,12 +126,26 @@ const clickToSelect = row => {
 // 處理選取狀態變化，更新 multipleSelection
 const handleSelectionChange = val => {
   multipleSelection.value = val;
-  console.log('Selected rows:', val);
-  console.log('Selected Count:', selectedCount.value);
+  // console.log('Selected rows:', val);
+  // console.log('Selected Count:', selectedCount.value);
 };
 
-// 計算選取的數量
-const selectedCount = computed(() => multipleSelection.value.length);
+// 點擊編輯商品按鈕
+const handleEditGoods = () => {
+  // ✅ Open the edit dialog when only one item is selected
+  if (selectedCount.value !== 1) {
+    ElMessage.warning('請選擇一個商品進行編輯');
+    return;
+  }
+  const selectedItem = multipleSelection.value[0]; // Get the first selected item
+  // console.log('Selected Item:', selectedItem);
+  // console.log('Goods Form Before Reset:', goodsForm.value);
+  // resetGoodsForm(); // Reset the form
+  Object.assign(goodsForm.value, selectedItem); // Copy selected item data to form
+  console.log('Goods Form After Reset:', goodsForm.value);
+  dialog.value.editGoods = true; // Open dialog
+}
+
 
 // 清除選取狀態
 const clearSelection = () => {
@@ -136,34 +167,13 @@ const deleteSelection = async () => {
   clearSelection(); // Clear selection after deletion
 };
 
-const getUpdateImage = async (imageFile, selectedGoodsID) => {
-  const filesModel = ref({
-    imgFile: null,
-    imgFileName: '',
-    imgIdent: '',
-    goodsImg: {}
-  });
-
-  // Fill the file and name of filesModel with the selected image file
-  filesModel.value.imgFile = imageFile;
-  console.log('Selected Image File:', imageFile);
-  filesModel.value.imgFileName = imageFile.name;
-  console.log('Selected Image File Name:', filesModel.value.imgFileName);
-
-  // Set the imgIdent by the selectedGoodsID
-  console.log('Ident for selected image:', selectedGoodsID);
-  const deleteImageSuccess = await postDeleteGoodsImage(selectedGoodsID); // Delete existing images
-  if (!deleteImageSuccess) {
-    ElMessage.error('刪除舊圖片失敗');
-    return;
+// Reset goods form when Editing dialog is closed
+watch(() => dialog.value.editGoods, (newVal) => {
+  if (!newVal) {
+    resetGoodsForm(); // Reset form when dialog is closed
   }
-};
-
-const dialog = ref({
-  createGoods: false,
-  updateGoods: false,
-  addGoods: false
 });
+
 
 const onPageChange = val => {
   pagination.value.currentPage = val;
