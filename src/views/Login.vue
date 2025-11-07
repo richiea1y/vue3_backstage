@@ -1,22 +1,18 @@
 <template>
-  <div class="flex flex-col h-[100vh] items-center justify-center">
-    <div class="login-block">
-      <div class="login-form">
-        <h1>Admin Backoffice</h1>
-        <el-form @submit.prevent="handleSubmit" @keydown.enter.prevent="handleEnterKey">
-          <el-form-item>
-            <el-input v-model="loginForm.username" type="text" placeholder="Username" />
-          </el-form-item>
-          <el-form-item>
-            <el-input v-model="loginForm.password" type="password" placeholder="Password" />
-          </el-form-item>
-          <el-form-item>
-            <el-input v-model="loginForm.otp" type="text" placeholder="OTP" />
-          </el-form-item>
-        </el-form>
-        <el-button type="success" @click="handleSubmit">Login</el-button>
-      </div>
-    </div>
+  <div class="login-form">
+    <h1>Admin Backoffice</h1>
+    <el-form @submit.prevent="handleSubmit" @keydown.enter.prevent="handleEnterKey">
+      <el-form-item>
+        <el-input v-model="loginForm.username" type="text" placeholder="Username" />
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="loginForm.password" type="password" placeholder="Password" />
+      </el-form-item>
+      <el-form-item>
+        <el-input v-model="loginForm.otp" type="text" placeholder="OTP" />
+      </el-form-item>
+    </el-form>
+    <el-button type="success" @click="handleSubmit">Login</el-button>
   </div>
 </template>
 <script setup>
