@@ -3,16 +3,16 @@
     <h1>Admin Backoffice</h1>
     <el-form @submit.prevent="handleSubmit" @keydown.enter.prevent="handleEnterKey">
       <el-form-item>
-        <el-input v-model="loginForm.username" type="text" placeholder="Username" />
+        <el-input v-model="loginForm.username" type="text" placeholder="Username" class="login-input"/>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="loginForm.password" type="password" placeholder="Password" />
+        <el-input v-model="loginForm.password" type="password" placeholder="Password" class="login-input"/>
       </el-form-item>
       <el-form-item>
-        <el-input v-model="loginForm.otp" type="text" placeholder="OTP" />
+        <el-input v-model="loginForm.otp" type="text" placeholder="OTP" class="login-input"/>
       </el-form-item>
     </el-form>
-    <el-button type="success" @click="handleSubmit">Login</el-button>
+    <el-button class="login-btn" @click="handleSubmit">Login</el-button>
   </div>
 </template>
 <script setup>
