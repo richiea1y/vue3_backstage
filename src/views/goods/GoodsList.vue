@@ -1,5 +1,5 @@
 <template>
-  <div class="flex items-end justify-between p-3 my-3 bg-white rounded bd-1">
+  <div class="flex justify-between p-3 my-3 bg-white rounded bd-1">
     <div class="flex items-center gap-2">
       <div class="w-[140px]">
         <el-input v-model="searchFilter.GoodsName" placeholder="Search By Name" clearable />

@@ -45,8 +45,8 @@ const menuItems = reactive([
     children: [
       {
         title: '會員列表',
-        path: '/users/user-list',
-        index: 'Users-1-1'
+        path: '/Members/member-list',
+        index: 'Members-1-1'
       }
     ]
   },
