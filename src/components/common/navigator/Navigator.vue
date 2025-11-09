@@ -42,13 +42,13 @@ const menuItems = reactive([
     title: '會員管理',
     icon: 'User',
     index: 'User-1',
-    children: [
-      {
-        title: '會員列表',
-        path: '/Members/member-list',
-        index: 'Members-1-1'
-      }
-    ]
+    // children: [
+    //   {
+    //     title: '會員列表',
+    //     path: '/Members/member-list',
+    //     index: 'Members-1-1'
+    //   }
+    // ]
   },
   {
     title: '商品管理',
@@ -82,7 +82,14 @@ const menuItems = reactive([
   {
     title: '管理員設定',
     icon: 'Tools',
-    index: 'Admin-1'
+    index: 'Admin-1',
+    children: [
+      {
+        title: '管理員列表',
+        path: '/admins/admin-list',
+        index: 'Admin-1-1'
+      }
+    ]
   }
 ]);
 

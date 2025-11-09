@@ -9,13 +9,13 @@
         <div>
           <el-button type="default" icon="Filter" />
         </div>
-        <!-- Right Section: New Member Button -->
+        <!-- Right Section: New Admin Button -->
         <div>
-          <el-button type="primary" icon="Plus">Member</el-button>
+          <el-button type="primary" icon="Plus">Admin</el-button>
         </div>
       </div>
     </div>
-    <!-- Bottom Section: Member List -->
+    <!-- Bottom Section: Admin List -->
     <div class="flex p-3 my-3 bg-white rounded bd-1"></div>
 </template>
 

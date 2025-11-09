@@ -51,25 +51,48 @@ const router = createRouter({
           ]
         },
         // 其他後台管理系統相關頁面都會放在這
+        // {
+        //   path: '/members',
+        //   name: 'Members',
+        //   component: () => import('@/views/members/index.vue'),
+        //   redirect: { name: 'MemberList' },
+        //   meta: {
+        //     requiresAuth: true,
+        //     title: 'Members',
+        //     header: 'Members'
+        //   },
+        //   children: [
+        //     {
+        //       path: 'member-list',
+        //       name: 'MemberList',
+        //       component: () => import('@/views/members/MemberList.vue'),
+        //       meta: {
+        //         requiresAuth: true,
+        //         title: 'Member List',
+        //         header: 'Member List'
+        //       }
+        //     }
+        //   ]
+        // },
         {
-          path: '/members',
-          name: 'Members',
-          component: () => import('@/views/members/index.vue'),
-          redirect: { name: 'MemberList' },
+          path: '/admins',
+          name: 'Admins',
+          component: () => import('@/views/admins/index.vue'),
+          redirect: { name: 'AdminList' },
           meta: {
             requiresAuth: true,
-            title: 'Members',
-            header: 'Members'
+            title: 'Admins',
+            header: 'Admins'
           },
           children: [
             {
-              path: 'member-list',
-              name: 'MemberList',
-              component: () => import('@/views/members/MemberList.vue'),
+              path: 'admin-list',
+              name: 'AdminList',
+              component: () => import('@/views/admins/AdminList.vue'),
               meta: {
                 requiresAuth: true,
-                title: 'Member List',
-                header: 'Member List'
+                title: 'Admin List',
+                header: 'Admin List'
               }
             }
           ]
