@@ -143,12 +143,11 @@ export const removeGoodsType = (data) =>
 /* Admin List */
 
 /* get Admin List */
-export const getAdminMembers = (data) =>
+export const getAdminMembers = () =>
   request({
     url: '/admin/member/backstage/r',
     method: 'get',
     headers: { 'Content-Type': 'text/plain' },
-    data
   })
 
 export const addAdminMembers = (data) =>
